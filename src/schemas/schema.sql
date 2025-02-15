@@ -6,4 +6,5 @@ CREATE TABLE IF NOT EXISTS example (
     host TEXT,
     language TEXT,
     timezone_offset INTEGER,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );

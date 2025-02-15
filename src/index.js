@@ -7,34 +7,73 @@ export default {
 		const { pathname } = new URL(request.url);
 		console.log(pathname);
 
+		switch (pathname) {
+			case '/create':
+				try {
+					const headers = Object.fromEntries(request.headers.entries());
+					const fingerprint = await getFingerprint(headers)
 
-		try {
-			const headers = Object.fromEntries(request.headers.entries());
-			const fingerprint = await getFingerprint(headers)
-	
-			await saveToFingerprintDb(fingerprint, env)
-	
-			return new Response(JSON.stringify({
-				success: true,
-				message: 'Fingerprint registrado com sucesso',
-				fingerprintId: fingerprint.fingerprint_id
-			}), {
-				headers: {
-					'content-type': 'application/json;charset=UTF-8'
+					await saveToFingerprintDb(fingerprint, env)
+
+					return new Response(JSON.stringify({
+						success: true,
+						message: 'Fingerprint registrado com sucesso',
+						fingerprintId: fingerprint.fingerprint_id
+					}), {
+						headers: {
+							'content-type': 'application/json;charset=UTF-8'
+						}
+					})
+				} catch (error) {
+					console.error('Erro:', error)
+					return new Response(JSON.stringify({
+						success: false,
+						message: 'Erro ao registrar fingerprint',
+						error: error.message
+					}), {
+						status: 500,
+						headers: {
+							'content-type': 'application/json;charset=UTF-8'
+						}
+					})
 				}
-			})
-		} catch (error) {
-			console.error('Erro:', error)
-			return new Response(JSON.stringify({
-				success: false,
-				message: 'Erro ao registrar fingerprint',
-				error: error.message
-			}), {
-				status: 500,
-				headers: {
-					'content-type': 'application/json;charset=UTF-8'
+				break;
+			case '/list':
+				try {
+					const response = await getFingerprintData(env)
+					if (result.success) {
+						return new Response(JSON.stringify(response.data), {
+							headers: {
+								'content-type': 'application/json;charset=UTF-8'
+							}
+						})
+					} else {
+						throw new Error("Erro ao buscar fingerprints");
+					}
+				} catch (error) {
+					console.error('Erro:', error)
+					return new Response(JSON.stringify({
+						success: false,
+						message: 'Erro ao buscar fingerprints',
+						error: error.message
+					}), {
+						status: 500,
+						headers: {
+							'content-type': 'application/json;charset=UTF-8'
+						}
+					})
 				}
-			})
+				break;
+			default:
+				return new Response(JSON.stringify({
+					message: 'Protegido por Cloudflare',
+				}), {
+					status: 200,
+					headers: {
+						'content-type': 'application/json;charset=UTF-8'
+					}
+				})
+				break;
 		}
 	}
 }
@@ -74,4 +113,21 @@ async function saveToFingerprintDb(fingerprint, env) {
 	).run()
 
 	return true
+}
+
+async function getFingerprintData(env, query = "SELECT * FROM example") {
+	try {
+		const db = await env.DB.prepare(query);
+		const result = await db.all();
+		return {
+			success: true,
+			data: result
+		};
+	} catch (error) {
+		console.error('Erro ao consultar banco de dados:', error);
+		return {
+			success: false,
+			error: error.message
+		};
+	}
 }
