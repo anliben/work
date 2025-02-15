@@ -1,11 +1,6 @@
-// addEventListener('fetch', event => {
-//     event.respondWith(handleRequest(event.request))
-// })
-
 export default {
 	async fetch(request, env) {
 		const { pathname } = new URL(request.url);
-		console.log(pathname);
 
 		switch (pathname) {
 			case '/create':
@@ -25,7 +20,6 @@ export default {
 						}
 					})
 				} catch (error) {
-					console.error('Erro:', error)
 					return new Response(JSON.stringify({
 						success: false,
 						message: 'Erro ao registrar fingerprint',
@@ -51,7 +45,6 @@ export default {
 						throw new Error("Erro ao buscar fingerprints");
 					}
 				} catch (error) {
-					console.error('Erro:', error)
 					return new Response(JSON.stringify({
 						success: false,
 						message: 'Erro ao buscar fingerprints',
@@ -124,7 +117,6 @@ async function getFingerprintData(env, query = "SELECT * FROM example") {
 			data: result
 		};
 	} catch (error) {
-		console.error('Erro ao consultar banco de dados:', error);
 		return {
 			success: false,
 			error: error.message
