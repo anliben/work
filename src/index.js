@@ -3,8 +3,8 @@ addEventListener('fetch', event => {
 })
 
 async function handleRequest(request) {
+	console.log('request: ', request);
     try {
-		console.log('request: ', request);
 		
         // Coletar informações do navegador
         const fingerprint = await getFingerprint(request)
