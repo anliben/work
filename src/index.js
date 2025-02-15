@@ -41,7 +41,7 @@ export default {
 			case '/list':
 				try {
 					const response = await getFingerprintData(env)
-					if (result.success) {
+					if (response.success) {
 						return new Response(JSON.stringify(response.data), {
 							headers: {
 								'content-type': 'application/json;charset=UTF-8'
