@@ -4,6 +4,12 @@ addEventListener('fetch', event => {
 
 async function handleRequest(request) {
 	console.log('request: ', request);
+
+	return new Response(JSON.stringify(request), {
+		headers: {
+			'content-type': 'application/json;charset=UTF-8'
+		}
+	})
     try {
 		
         // Coletar informações do navegador
