@@ -8,7 +8,7 @@
   },
   "routes": [
     {
-      "pattern": "https://work.evolars-ltda.workers.dev/*",
+      "pattern": "https://work.evolars-ltda.workers.dev",
       "zone_name": "https://work.evolars-ltda.workers.dev/get"
     }
   ]
