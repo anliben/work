@@ -5,5 +5,12 @@
   "compatibility_date": "2025-02-14",
   "observability": {
     "enabled": true
-  }
+  },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "teste",
+      "database_id": "355fad05-d608-4e82-8fd5-81f41f09696e"
+    }
+  ]
 }
