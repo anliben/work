@@ -3,21 +3,12 @@ addEventListener('fetch', event => {
 })
 
 async function handleRequest(request) {
-	console.log('request: ', request);
-
-	return new Response(JSON.stringify(request), {
-		headers: {
-			'content-type': 'application/json;charset=UTF-8'
-		}
-	})
     try {
-		
-        // Coletar informações do navegador
-        const fingerprint = await getFingerprint(request)
-        
-        // Salvar no banco de dados
-        const response = await saveToFingerprintDb(fingerprint)
-        
+		const headers = Object.fromEntries(request.headers.entries());
+		const fingerprint = await getFingerprint(headers)
+
+		await saveToFingerprintDb(fingerprint)
+
         return new Response(JSON.stringify({
             success: true,
             message: 'Fingerprint registrado com sucesso',
@@ -45,11 +36,10 @@ async function handleRequest(request) {
 async function getFingerprint(request) {
     const fingerprint = {
         fingerprint_id: crypto.randomUUID(),
-        browser_type: request.headers.get('User-Agent'),
-        os: getOSFromUA(request.headers.get('User-Agent')),
-        screen_resolution: `${screen.width}x${screen.height}`,
-        device_memory: navigator.deviceMemory || null,
-        hardware_concurrency: navigator.hardwareConcurrency || null,
+        browser_type: request['user-agent'],
+        os: request['sec-ch-ua-platform'],
+        host: request['host'],
+        language: request['accept-language'],
         timezone_offset: new Date().getTimezoneOffset()
     }
     
@@ -62,30 +52,20 @@ async function saveToFingerprintDb(fingerprint) {
             fingerprint_id,
             browser_type,
             os,
-            screen_resolution,
-            device_memory,
-            hardware_concurrency,
+            host,
+            language,
             timezone_offset
-        ) VALUES (?, ?, ?, ?, ?, ?, ?)
+        ) VALUES (?, ?, ?, ?, ?, ?)
     `)
     
     await db.bind(
         fingerprint.fingerprint_id,
         fingerprint.browser_type,
         fingerprint.os,
-        fingerprint.screen_resolution,
-        fingerprint.device_memory,
-        fingerprint.hardware_concurrency,
+        fingerprint.host,
+        fingerprint.language,
         fingerprint.timezone_offset
     ).run()
     
     return true
-}
-
-function getOSFromUA(userAgent) {
-    if (/Windows/.test(userAgent)) return 'Windows'
-    if (/Mac OS X/.test(userAgent)) return 'macOS'
-    if (/Linux/.test(userAgent)) return 'Linux'
-    if (/Android/.test(userAgent)) return 'Android'
-    return 'Outro'
 }
