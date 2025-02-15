@@ -5,11 +5,5 @@
   "compatibility_date": "2025-02-14",
   "observability": {
     "enabled": true
-  },
-  "routes": [
-    {
-      "pattern": "https://evolars.com.br/get/*",
-      "zone_name": "https://evolars.com.br"
-    }
-  ]
+  }
 }
